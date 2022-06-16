@@ -11,7 +11,7 @@ namespace StocksBot
     public class MessagesConsumer : BackgroundService
     {
         private const string ConnectionString = "amqp://guest:guest@localhost:5672";
-        private const string Queue = "stocks-price";
+        private const string Queue = "stocks-queue";
         private const int ExecutionDelay = 10;
         
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -46,7 +46,8 @@ namespace StocksBot
         private void MessageHandler(
             object sender, BasicDeliverEventArgs e)
         {
-            Console.WriteLine("New message received");
+            var message = Encoding.UTF8.GetString(e.Body.ToArray());
+            Console.WriteLine($"New message received: {message}");
         }
     }
 }

@@ -23,18 +23,29 @@ namespace ChatWSServer
             services.AddSingleton<IWebSocketServerConnectionManager, WebSocketServerConnectionManager>();
             return services;
         }
+
+        public static IServiceCollection AddChatBotCommands(this IServiceCollection services)
+        {
+            services.AddSingleton<IBotManager, BotManager>();
+            return services;
+        }
     }
     
     public class WebSocketServerMiddleware
     {
         private readonly RequestDelegate _next;
 
-        private readonly IWebSocketServerConnectionManager _manager;
+        private readonly IWebSocketServerConnectionManager _socketManager;
+        private readonly IBotManager _botManager;
 
-        public WebSocketServerMiddleware(RequestDelegate next, IWebSocketServerConnectionManager manager)
+        public WebSocketServerMiddleware(
+            RequestDelegate next, 
+            IWebSocketServerConnectionManager socketManager,
+            IBotManager botManager)
         {
             _next = next;
-            _manager = manager;
+            _socketManager = socketManager;
+            _botManager = botManager;
         }
 
         public async Task InvokeAsync(HttpContext context)
@@ -45,7 +56,7 @@ namespace ChatWSServer
                 Console.WriteLine("WebSocket Connected");
 
                 context.Request.Query.TryGetValue("username", out var username);
-                var connectionId = _manager.AddSocket(webSocket, username);
+                var connectionId = _socketManager.AddSocket(webSocket, username);
                 
 
                 await Receive(webSocket, async (result, buffer) =>
@@ -55,11 +66,16 @@ namespace ChatWSServer
                         var message = Encoding.UTF8.GetString(buffer, 0, result.Count);
                         Console.WriteLine($"Receive message from client: " + connectionId);
                         Console.WriteLine($"Message: {message}");
+                        if (_botManager.IsBotCommand(message))
+                        {
+                            _botManager.SendMessage(message);
+                        }
+                        
                         await Broadcast(message, username);
                     }
                     else if (result.MessageType == WebSocketMessageType.Close)
                     {
-                        _manager.CloseSocket(webSocket, result);
+                        _socketManager.CloseSocket(webSocket, result);
                     }
                 });
             }
@@ -73,7 +89,7 @@ namespace ChatWSServer
         private async Task Broadcast(string message, string username)
         {
             Console.WriteLine("Broadcast");
-            foreach (var sock in _manager.GetAllSockets())
+            foreach (var sock in _socketManager.GetAllSockets())
             {
                 var response = JsonConvert.SerializeObject(new { message, username });
                 if (sock.Value.State == WebSocketState.Open)
