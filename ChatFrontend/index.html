@@ -1,43 +1,40 @@
-<!DOCTYPE HTML>
+<!DOCTYPE html>
 <html>
 
 <head>
-    <script type="text/javascript">
-        function WebSocketTest() {
-            try {
-                if ("WebSocket" in window) {
-
-                    // Let us open a web socket
-                    var ws = new WebSocket("ws://localhost:5050/Echo");
-
-                    ws.onopen = function () {
-                        var message = "Sending message";
-                        ws.send(message);
-                        console.log("Message sent");
-                    };
-
-                    ws.onmessage = function (evt) {
-                        var message = evt.data;
-                        console.log("Message received: " + message);
-                    };
-
-                    ws.onclose = function () {
-                        console.log("Connection is closed...");
-                    };
-                } else {
-                    alert("WebSocket NOT supported by your Browser!");
-                }
-            } catch (e) {
-                console.log(e);
-            }
-        }
-    </script>
+    <meta charset="utf-8" />
+    <title>Chat Client</title>
+    <script src="script.js" defer></script>
 </head>
 
 <body>
-    <div id="sse">
-        <a href="javascript:WebSocketTest()">Run WebSocket</a>
+    <h1>Chat Client</h1>
+    <p id="stateLabel">Ready to connect</p>
+    <p id="connIDLabel" style="display: none;">ConnID: N/a</p>
+    <div>
+        <label for="username">Username:</label>
+        <input id="username" />
+        <button id="connectButton" type="submit">Connect</button>
+        <button id="closeButton" disabled>Close Socket</button>
     </div>
+    <p></p>
+    <div>
+        <label for="sendMessage">Message:</label>
+        <input id="sendMessage" disabled />
+        <button id="sendButton" type="submit" disabled>Send</button>
+    </div>
+    <p></p>
+    <div>
+        <label for="recipients">Recipient IDs:</label>
+        <input id="recipients" disabled />
+    </div>
+    <p></p>
+    <h2>Messages</h2>
+    <table style="width: 800px">
+        <tbody id="messagesLog">
+        </tbody>
+    </table>
+    <p></p>
 </body>
 
 </html>
