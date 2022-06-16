@@ -2,6 +2,8 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChatWSServer", "ChatWSServer\ChatWSServer.csproj", "{39743641-99FB-4622-8C27-3093A6F90EDA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StocksBot", "StocksBot\StocksBot.csproj", "{1F47CB13-C98F-41AE-A5BE-31E97B385F50}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +14,9 @@ Global
 		{39743641-99FB-4622-8C27-3093A6F90EDA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{39743641-99FB-4622-8C27-3093A6F90EDA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{39743641-99FB-4622-8C27-3093A6F90EDA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1F47CB13-C98F-41AE-A5BE-31E97B385F50}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1F47CB13-C98F-41AE-A5BE-31E97B385F50}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1F47CB13-C98F-41AE-A5BE-31E97B385F50}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1F47CB13-C98F-41AE-A5BE-31E97B385F50}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
