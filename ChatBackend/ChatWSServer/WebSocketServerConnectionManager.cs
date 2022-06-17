@@ -2,8 +2,10 @@ using System;
 using System.Collections.Concurrent;
 using System.Linq;
 using System.Net.WebSockets;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace ChatWSServer
 {
@@ -14,6 +16,7 @@ namespace ChatWSServer
         string AddSocket(WebSocket socket, string username);
         ConcurrentDictionary<WebSocketSession, WebSocket> GetAllSockets();
         Task CloseSocket(WebSocket socket, WebSocketReceiveResult result);
+        Task Broadcast(string message, string username);
     }
     
     public class WebSocketServerConnectionManager : IWebSocketServerConnectionManager
@@ -31,6 +34,17 @@ namespace ChatWSServer
         public ConcurrentDictionary<WebSocketSession, WebSocket> GetAllSockets()
         {
             return _sockets;
+        }
+        
+        public async Task Broadcast(string message, string username)
+        {
+            Console.WriteLine("Broadcast");
+            foreach (var sock in GetAllSockets())
+            {
+                var response = JsonConvert.SerializeObject(new { message, username });
+                if (sock.Value.State == WebSocketState.Open)
+                    await sock.Value.SendAsync(Encoding.UTF8.GetBytes(response), WebSocketMessageType.Text, true, CancellationToken.None);
+            }
         }
 
         public async Task CloseSocket(WebSocket socket, WebSocketReceiveResult result)

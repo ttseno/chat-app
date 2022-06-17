@@ -71,7 +71,7 @@ namespace ChatWSServer
                             _botManager.SendMessage(message);
                         }
                         
-                        await Broadcast(message, username);
+                        await _socketManager.Broadcast(message, username);
                     }
                     else if (result.MessageType == WebSocketMessageType.Close)
                     {
@@ -85,17 +85,7 @@ namespace ChatWSServer
                 await _next(context);
             }
         }
-
-        private async Task Broadcast(string message, string username)
-        {
-            Console.WriteLine("Broadcast");
-            foreach (var sock in _socketManager.GetAllSockets())
-            {
-                var response = JsonConvert.SerializeObject(new { message, username });
-                if (sock.Value.State == WebSocketState.Open)
-                    await sock.Value.SendAsync(Encoding.UTF8.GetBytes(response), WebSocketMessageType.Text, true, CancellationToken.None);
-            }
-        }
+        
 
         private async Task Receive(WebSocket socket, Action<WebSocketReceiveResult, byte[]> handleMessage)
         {
