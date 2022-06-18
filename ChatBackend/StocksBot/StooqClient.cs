@@ -23,7 +23,7 @@ namespace StocksBot
 
         public async Task<StooqModel> GetStockQuotation(string stockCode)
         {
-            var uri = new Uri($"{_configuration.StooqApiBaseUrl}/q/l/?s={stockCode}&f=sd2t2ohlcv&h&e=csv");
+            var uri = $"{_configuration.StooqApiBaseUrl}/q/l/?s={stockCode}&f=sd2t2ohlcv&h&e=csv";
             var response = await _httpClient.GetStringAsync(uri);
             var lines = response.Split(Environment.NewLine);
             return new StooqModel(lines[1]);
@@ -40,6 +40,10 @@ namespace StocksBot
         public double Low { get; init; }
         public double Close { get; init; }
         public double Volume { get; init; }
+
+        public StooqModel()
+        {
+        }
 
         public StooqModel(string line)
         {

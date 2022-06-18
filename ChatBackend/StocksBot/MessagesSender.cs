@@ -31,12 +31,6 @@ namespace StocksBot
                 using var connection = factory.CreateConnection();
                 using var channel = connection.CreateModel();
 
-                channel.QueueDeclare(queue: _config.ResponseQueue,
-                    durable: false,
-                    exclusive: false,
-                    autoDelete: false,
-                    arguments: null);
-                
                 channel.BasicPublish(exchange: "",
                     routingKey: _config.ResponseQueue,
                     basicProperties: null,

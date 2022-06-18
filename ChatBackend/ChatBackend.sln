@@ -4,6 +4,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChatWSServer", "ChatWSServe
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StocksBot", "StocksBot\StocksBot.csproj", "{1F47CB13-C98F-41AE-A5BE-31E97B385F50}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{70857B3B-F4F7-4AF0-AD3A-2296114E290A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StocksBotTests", "StocksBotTests\StocksBotTests.csproj", "{76344DCE-EAB9-4D36-AA3F-B076C3381003}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +22,12 @@ Global
 		{1F47CB13-C98F-41AE-A5BE-31E97B385F50}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1F47CB13-C98F-41AE-A5BE-31E97B385F50}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1F47CB13-C98F-41AE-A5BE-31E97B385F50}.Release|Any CPU.Build.0 = Release|Any CPU
+		{76344DCE-EAB9-4D36-AA3F-B076C3381003}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{76344DCE-EAB9-4D36-AA3F-B076C3381003}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{76344DCE-EAB9-4D36-AA3F-B076C3381003}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{76344DCE-EAB9-4D36-AA3F-B076C3381003}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{76344DCE-EAB9-4D36-AA3F-B076C3381003} = {70857B3B-F4F7-4AF0-AD3A-2296114E290A}
 	EndGlobalSection
 EndGlobal
