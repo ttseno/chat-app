@@ -13,26 +13,26 @@ connectButton.onclick = function () {
     socket = new WebSocket(socketUrl);
     socket.onopen = function (event) {
         updateState();
-        messagesLog.innerHTML += '<tr>' +
-            '<td colspan="3" class="messagesLog-data">Connection opened</td>' +
-            '</tr>';
+        messagesLog.innerHTML =
+            '<p colspan="3" class="messagesLog-data">Connection opened</p>';
     };
     socket.onclose = function (event) {
         updateState();
-        messagesLog.innerHTML += '<tr>' +
-            '<td colspan="3" class="messagesLog-data">Connection closed. Code: ' + htmlEscape(event.code) + '. Reason: ' + htmlEscape(event.reason) + '</td>' +
-            '</tr>';
+        messagesLog.innerHTML +=
+            '<p colspan="3" class="messagesLog-data">Connection closed. Code: ' + htmlEscape(event.code) + '. Reason: ' + htmlEscape(event.reason) + '</p>';
+
     };
     socket.onerror = updateState;
     socket.onmessage = function (event) {
         var data = JSON.parse(event.data);
         console.log(data);
+        var timestamp = new Date(data.timestamp).toLocaleString();
         if (data.username == username.value) {
             messagesLog.innerHTML += '<tr>' +
-                '<td><span>You:</span> ' + htmlEscape(data.message) + ' </td>';
+                '<p>[' + htmlEscape(timestamp) + '] <span styles="font-weight: bold">You:</span> ' + htmlEscape(data.message) + ' </p>';
         } else {
             messagesLog.innerHTML += '<tr>' +
-                '<td><span>' + htmlEscape(data.username) + ':</span> ' + htmlEscape(data.message) + ' </td>';
+                '<p>[' + htmlEscape(timestamp) + '] <span>' + htmlEscape(data.username) + ':</span> ' + htmlEscape(data.message) + ' </p>';
         }
         isConnID(data.message);
     };

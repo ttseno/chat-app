@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net.WebSockets;
 using System.Text;
@@ -18,19 +19,14 @@ namespace ChatWSServer
         private readonly RequestDelegate _next;
 
         private readonly IWebSocketServerConnectionManager _socketManager;
-        private readonly IChatManager _chatManager;
         
-        public WebSocketServerMiddleware(
-            RequestDelegate next, 
-            IWebSocketServerConnectionManager socketManager,
-            IChatManager chatManager)
+        public WebSocketServerMiddleware(RequestDelegate next, IWebSocketServerConnectionManager socketManager)
         {
             _next = next;
             _socketManager = socketManager;
-            _chatManager = chatManager;
         }
 
-        public async Task InvokeAsync(HttpContext context)
+        public async Task InvokeAsync(HttpContext context, IChatManager chatManager)
         {
             if (context.WebSockets.IsWebSocketRequest)
             {
@@ -40,6 +36,9 @@ namespace ChatWSServer
                 context.Request.Query.TryGetValue("username", out var username);
                 var connectionId = _socketManager.AddSocket(webSocket, username);
                 context.Request.Query.TryGetValue("roomId", out var roomId);
+                roomId = "test";
+                
+                await SendMessages(webSocket, chatManager.GetRoomHistory(roomId));
 
                 await Receive(webSocket, async (result, buffer) =>
                 {
@@ -54,19 +53,27 @@ namespace ChatWSServer
                                 MessageContent = message
                             };
                         
-                        _chatManager.HandleMessage(chatMessage);
+                        await chatManager.HandleMessage(chatMessage);
 
                         await _socketManager.Broadcast(message, username);
                     }
                     else if (result.MessageType == WebSocketMessageType.Close)
                     {
-                        _socketManager.CloseSocket(webSocket, result);
+                        await _socketManager.CloseSocket(webSocket, result);
                     }
                 });
             }
             else
             {
                 await _next(context);
+            }
+        }
+
+        private async Task SendMessages(WebSocket socket, IEnumerable<ChatMessage> chatMessages)
+        {
+            foreach (var message in chatMessages)
+            {
+                await _socketManager.SendMessage(socket, message.MessageContent, message.Username);
             }
         }
         

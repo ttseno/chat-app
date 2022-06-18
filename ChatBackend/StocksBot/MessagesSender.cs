@@ -8,7 +8,7 @@ namespace StocksBot
 {
     public interface IMessagesSender
     {
-        Task SendMessage(string message);
+        void SendMessage(string message);
     }
     
     public class MessagesSender : IMessagesSender
@@ -20,7 +20,7 @@ namespace StocksBot
             _config = config;
         }
 
-        public async Task SendMessage(string message)
+        public void SendMessage(string message)
         {
             try
             {
@@ -31,6 +31,12 @@ namespace StocksBot
                 using var connection = factory.CreateConnection();
                 using var channel = connection.CreateModel();
 
+                channel.QueueDeclare(queue: _config.ResponseQueue,
+                    durable: false,
+                    exclusive: false,
+                    autoDelete: false,
+                    arguments: null);
+                
                 channel.BasicPublish(exchange: "",
                     routingKey: _config.ResponseQueue,
                     basicProperties: null,

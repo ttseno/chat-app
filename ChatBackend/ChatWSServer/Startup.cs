@@ -22,6 +22,11 @@ namespace ChatWSServer
         {
             app.UseWebSockets();
             app.UseWebSocketServer();
+            
+            using var scope = app.ApplicationServices.CreateScope();
+            using var context = scope.ServiceProvider.GetService<DbContext>();
+            if (context != null)
+                context.Database.Migrate();
         }
     }
 

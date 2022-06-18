@@ -5,6 +5,7 @@ using System.Net.WebSockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Components.RenderTree;
 using Newtonsoft.Json;
 
 namespace ChatWSServer
@@ -14,8 +15,8 @@ namespace ChatWSServer
     public interface IWebSocketServerConnectionManager
     {
         string AddSocket(WebSocket socket, string username);
-        ConcurrentDictionary<WebSocketSession, WebSocket> GetAllSockets();
         Task CloseSocket(WebSocket socket, WebSocketReceiveResult result);
+        Task SendMessage(WebSocket socket, string message, string username, DateTime? timestamp = null);
         Task Broadcast(string message, string username);
     }
     
@@ -35,14 +36,20 @@ namespace ChatWSServer
         {
             return _sockets;
         }
+
+        public async Task SendMessage(WebSocket socket, string  message, string username, DateTime? timestamp = null)
+        {
+            timestamp ??= DateTime.Now;
+            var response = JsonConvert.SerializeObject(new { message, username, timestamp });
+            if (socket.State == WebSocketState.Open)
+                await socket.SendAsync(Encoding.UTF8.GetBytes(response), WebSocketMessageType.Text, true, CancellationToken.None);
+        }
         
         public async Task Broadcast(string message, string username)
         {
             foreach (var sock in GetAllSockets())
             {
-                var response = JsonConvert.SerializeObject(new { message, username });
-                if (sock.Value.State == WebSocketState.Open)
-                    await sock.Value.SendAsync(Encoding.UTF8.GetBytes(response), WebSocketMessageType.Text, true, CancellationToken.None);
+                await SendMessage(sock.Value, message, username);
             }
         }
 

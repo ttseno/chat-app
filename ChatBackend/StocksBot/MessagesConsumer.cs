@@ -58,9 +58,19 @@ namespace StocksBot
         {
             var message = Encoding.UTF8.GetString(e.Body.ToArray());
             Console.WriteLine($"New message received: {message}");
-            var quotation = await _client.GetStockQuotation(message);
-            var response = new {user = "stocks-bot", message = quotation.ToString()};
-            _messagesSender.SendMessage(JsonConvert.SerializeObject(response));
+            
+            try
+            {
+                var quotation = await _client.GetStockQuotation(message);
+                var response = new {user = "stocks-bot", message = quotation.ToString()};
+                _messagesSender.SendMessage(JsonConvert.SerializeObject(response));
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                var errorMessage = new {user = "stocks-bot", message = $"Unable to get quotes for {message}"};
+                _messagesSender.SendMessage(JsonConvert.SerializeObject(errorMessage));
+            }
         }
     }
 }

@@ -23,7 +23,7 @@ namespace StocksBot
 
         public async Task<StooqModel> GetStockQuotation(string stockCode)
         {
-            var uri = $"{_configuration.StooqApiBaseUrl}/q/l/?s={stockCode}&f=sd2t2ohlcv&h&e=csv";
+            var uri = $"{_configuration.StooqApiBaseUrl}/q/l/?s={stockCode.ToLower()}&f=sd2t2ohlcv&h&e=csv";
             var response = await _httpClient.GetStringAsync(uri);
             var lines = response.Split(Environment.NewLine);
             return new StooqModel(lines[1]);

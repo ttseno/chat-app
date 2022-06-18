@@ -13,7 +13,7 @@ namespace ChatWSServer
     public interface IBotManager
     {
         bool IsBotCommand(string message);
-        Task SendMessage(string message);
+        void SendMessage(string message);
     }
     
     public class BotManager : IBotManager
@@ -35,16 +35,16 @@ namespace ChatWSServer
             return BotList.Any(b => message.StartsWith(b.prefix));
         }
 
-        public async Task SendMessage(string message)
+        public void SendMessage(string message)
         {
             var bot = BotList.First(b => message.StartsWith(b.prefix));
             var requestContent = message.Replace(bot.prefix, "");
 
-            await SendMessage(requestContent, bot);
+            SendMessage(requestContent, bot);
         }
 
         
-        private async Task SendMessage(string message, Bot bot)
+        private void SendMessage(string message, Bot bot)
         {
             try
             {

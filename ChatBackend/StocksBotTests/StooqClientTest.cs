@@ -24,7 +24,7 @@ namespace StocksBotTests
         }
 
         [Test]
-        public async Task Test1()
+        public async Task TestGetStockQuotation_ShouldReturnExpectedValue()
         {
             // Arrange
             var fileString = @"Symbol,Date,Time,Open,High,Low,Close,Volume

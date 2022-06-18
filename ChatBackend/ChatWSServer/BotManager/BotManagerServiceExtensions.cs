@@ -6,7 +6,7 @@ namespace ChatWSServer
     {
         public static IServiceCollection AddChatBotCommands(this IServiceCollection services)
         {
-            services.AddSingleton<IBotManager, BotManager>();
+            services.AddScoped<IBotManager, BotManager>();
             return services;
         }
     }
