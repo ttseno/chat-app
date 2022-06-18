@@ -70,9 +70,9 @@ namespace ChatWSServerTests
             var roomId = "some-Id";
             var messageList = new List<ChatMessage>()
             {
-                new ChatMessage() {Id = 1, RoomId = roomId, TimeStamp = DateTime.Now},
-                new ChatMessage() {Id = 2, RoomId = roomId, TimeStamp = DateTime.MinValue},
-                new ChatMessage() {Id = 3, RoomId = roomId, TimeStamp = DateTime.MaxValue}
+                new ChatMessage() {Id = 1, RoomId = roomId, TimeStamp = DateTimeOffset.Now},
+                new ChatMessage() {Id = 2, RoomId = roomId, TimeStamp = DateTimeOffset.MinValue},
+                new ChatMessage() {Id = 3, RoomId = roomId, TimeStamp = DateTimeOffset.MaxValue}
             };
 
             var expectedOrder = new List<long>() {2, 1, 3};

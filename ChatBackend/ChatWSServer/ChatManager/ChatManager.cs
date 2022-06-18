@@ -36,7 +36,7 @@ namespace ChatWSServer
         public IEnumerable<ChatMessage> GetRoomHistory(string roomId, int take = 50, int skip = 0)
         {
             var history = _messageRepository.GetMessages(roomId, take, skip);
-            return history.OrderByDescending(h => h.TimeStamp);
+            return history.OrderBy(h => h.TimeStamp);
         }
     }
 }

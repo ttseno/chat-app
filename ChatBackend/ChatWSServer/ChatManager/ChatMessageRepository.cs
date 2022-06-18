@@ -41,7 +41,7 @@ namespace ChatWSServer
         {
             return _chatMessage
                 .Where(m => m.RoomId == roomId)
-                .OrderBy(m => m.TimeStamp)
+                .OrderByDescending(m => m.TimeStamp)
                 .Take(take)
                 .Skip(skip);
         }

@@ -1,16 +1,10 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.WebSockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using ChatWSServer.Configuration;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json;
 
 namespace ChatWSServer 
 {
@@ -30,37 +24,44 @@ namespace ChatWSServer
         {
             if (context.WebSockets.IsWebSocketRequest)
             {
-                WebSocket webSocket = await context.WebSockets.AcceptWebSocketAsync();
-                Console.WriteLine("WebSocket Connected");
-
-                context.Request.Query.TryGetValue("username", out var username);
-                context.Request.Query.TryGetValue("roomId", out var roomId);
-                var connectionId = _socketManager.AddSocket(webSocket, roomId, username);
-                
-                await SendMessages(webSocket, roomId, chatManager.GetRoomHistory(roomId));
-
-                await Receive(webSocket, async (result, buffer) =>
+                try
                 {
-                    if (result.MessageType == WebSocketMessageType.Text)
+                    WebSocket webSocket = await context.WebSockets.AcceptWebSocketAsync();
+                    Console.WriteLine("WebSocket Connected");
+
+                    context.Request.Query.TryGetValue("username", out var username);
+                    context.Request.Query.TryGetValue("roomId", out var roomId);
+                    var connectionId = _socketManager.AddSocket(webSocket, roomId, username);
+
+                    await SendMessages(webSocket, roomId, chatManager.GetRoomHistory(roomId));
+
+                    await Receive(webSocket, async (result, buffer) =>
                     {
-                        var message = Encoding.UTF8.GetString(buffer, 0, result.Count);
-                        Console.WriteLine($"Receive message from client: " + connectionId);
-                        
-                        var chatMessage = new ChatMessage()
+                        if (result.MessageType == WebSocketMessageType.Text)
+                        {
+                            var message = Encoding.UTF8.GetString(buffer, 0, result.Count);
+                            Console.WriteLine($"Receive message from client: " + connectionId);
+
+                            var chatMessage = new ChatMessage()
                             {
                                 ConnectionId = connectionId, Username = username, RoomId = roomId,
                                 MessageContent = message
                             };
-                        
-                        await chatManager.HandleMessage(chatMessage);
 
-                        await _socketManager.Broadcast(message, roomId, username);
-                    }
-                    else if (result.MessageType == WebSocketMessageType.Close)
-                    {
-                        await _socketManager.CloseSocket(webSocket, result);
-                    }
-                });
+                            await chatManager.HandleMessage(chatMessage);
+
+                            await _socketManager.Broadcast(message, roomId, username);
+                        }
+                        else if (result.MessageType == WebSocketMessageType.Close)
+                        {
+                            await _socketManager.CloseSocket(webSocket, result);
+                        }
+                    });
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Unexpected error while handling message. Exception: {ex.Message}");
+                }
             }
             else
             {
