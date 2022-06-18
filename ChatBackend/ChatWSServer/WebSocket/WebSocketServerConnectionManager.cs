@@ -38,7 +38,6 @@ namespace ChatWSServer
         
         public async Task Broadcast(string message, string username)
         {
-            Console.WriteLine("Broadcast");
             foreach (var sock in GetAllSockets())
             {
                 var response = JsonConvert.SerializeObject(new { message, username });

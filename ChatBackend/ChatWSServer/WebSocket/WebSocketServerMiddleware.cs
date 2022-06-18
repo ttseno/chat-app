@@ -4,33 +4,15 @@ using System.Net.WebSockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using ChatWSServer.Configuration;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 
-namespace ChatWSServer
+namespace ChatWSServer 
 {
-    public static class WebSocketServerMiddlewareExtensions
-    {
-        public static IApplicationBuilder UseWebSocketServer(this IApplicationBuilder builder)
-        {
-            return builder.UseMiddleware<WebSocketServerMiddleware>();
-        }
-        
-        public static IServiceCollection AddWebSocketServerConnectionManager(this IServiceCollection services)
-        {   
-            services.AddSingleton<IWebSocketServerConnectionManager, WebSocketServerConnectionManager>();
-            return services;
-        }
-
-        public static IServiceCollection AddChatBotCommands(this IServiceCollection services)
-        {
-            services.AddSingleton<IBotManager, BotManager>();
-            return services;
-        }
-    }
-    
     public class WebSocketServerMiddleware
     {
         private readonly RequestDelegate _next;
@@ -57,7 +39,6 @@ namespace ChatWSServer
 
                 context.Request.Query.TryGetValue("username", out var username);
                 var connectionId = _socketManager.AddSocket(webSocket, username);
-                
 
                 await Receive(webSocket, async (result, buffer) =>
                 {
@@ -65,7 +46,6 @@ namespace ChatWSServer
                     {
                         var message = Encoding.UTF8.GetString(buffer, 0, result.Count);
                         Console.WriteLine($"Receive message from client: " + connectionId);
-                        Console.WriteLine($"Message: {message}");
                         if (_botManager.IsBotCommand(message))
                         {
                             _botManager.SendMessage(message);
@@ -81,7 +61,6 @@ namespace ChatWSServer
             }
             else
             {
-                Console.WriteLine("Request made from");
                 await _next(context);
             }
         }

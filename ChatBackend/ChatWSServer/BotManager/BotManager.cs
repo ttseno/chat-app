@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ChatWSServer.Configuration;
 using RabbitMQ.Client;
 
 namespace ChatWSServer
@@ -17,12 +18,17 @@ namespace ChatWSServer
     
     public class BotManager : IBotManager
     {
-        private const string ConnectionString = "amqp://guest:guest@localhost:5672";
+        private static string ConnectionString;
 
         public List<Bot> BotList = new List<Bot>()
         {
             new Bot("stocks-bot", "/stock=", "stocks-queue")
         };
+
+        public BotManager(RabbitMQConfig config)
+        {
+            ConnectionString = config.ConnectionString;
+        }
 
         public bool IsBotCommand(string message)
         {
