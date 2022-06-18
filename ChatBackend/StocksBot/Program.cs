@@ -36,6 +36,7 @@ namespace StocksBot
                         };
                     });
                     services.AddScoped<IStooqClient, StooqClient>();
+                    services.AddScoped<IMessagesSender, MessagesSender>();
                     services.AddHostedService<MessagesConsumer>();
                 });
     }

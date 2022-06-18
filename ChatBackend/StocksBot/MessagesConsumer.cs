@@ -3,6 +3,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
+using Newtonsoft.Json;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using StocksBot.Configuration;
@@ -57,8 +58,9 @@ namespace StocksBot
         {
             var message = Encoding.UTF8.GetString(e.Body.ToArray());
             Console.WriteLine($"New message received: {message}");
-            var response = await _client.GetStockQuotation(message);
-            _messagesSender.SendMessage(response.ToString());
+            var quotation = await _client.GetStockQuotation(message);
+            var response = new {user = "stocks-bot", message = quotation.ToString()};
+            _messagesSender.SendMessage(JsonConvert.SerializeObject(response));
         }
     }
 }
