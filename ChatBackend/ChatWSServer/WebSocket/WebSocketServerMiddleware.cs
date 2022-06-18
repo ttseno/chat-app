@@ -73,7 +73,7 @@ namespace ChatWSServer
         {
             foreach (var message in chatMessages)
             {
-                await _socketManager.SendMessage(socket, roomId, message.MessageContent, message.Username);
+                await _socketManager.SendMessage(socket, roomId, message.MessageContent, message.Username, message.TimeStamp);
             }
         }
         

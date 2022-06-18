@@ -16,7 +16,7 @@ namespace ChatWSServer
     {
         string AddSocket(WebSocket socket, string roomId, string username);
         Task CloseSocket(WebSocket socket, WebSocketReceiveResult result);
-        Task SendMessage(WebSocket socket, string roomId, string message, string username, DateTime? timestamp = null);
+        Task SendMessage(WebSocket socket, string roomId, string message, string username, DateTimeOffset? timestamp = null);
         Task Broadcast(string message, string roomId, string username);
     }
     
@@ -37,9 +37,9 @@ namespace ChatWSServer
             return _sockets;
         }
 
-        public async Task SendMessage(WebSocket socket, string roomId, string  message, string username, DateTime? timestamp = null)
+        public async Task SendMessage(WebSocket socket, string roomId, string  message, string username, DateTimeOffset? timestamp = null)
         {
-            timestamp ??= DateTime.Now;
+            timestamp ??= DateTimeOffset.Now;
             var response = JsonConvert.SerializeObject(new { message, username, roomId, timestamp });
             if (socket.State == WebSocketState.Open)
                 await socket.SendAsync(Encoding.UTF8.GetBytes(response), WebSocketMessageType.Text, true, CancellationToken.None);

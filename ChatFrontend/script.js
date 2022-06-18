@@ -16,12 +16,12 @@ connectButton.onclick = function () {
     socket.onopen = function (event) {
         updateState();
         messagesLog.innerHTML =
-            '<p colspan="3" class="messagesLog-data">Connection opened</p>';
+            '<p colspan="3" class="messagesLog-data">Connection opened.</p>';
     };
     socket.onclose = function (event) {
         updateState();
         messagesLog.innerHTML +=
-            '<p colspan="3" class="messagesLog-data">Connection closed. Code: ' + htmlEscape(event.code) + '. Reason: ' + htmlEscape(event.reason) + '</p>';
+            '<p colspan="3" class="messagesLog-data">Connection closed.</p>';
 
     };
     socket.onerror = updateState;
