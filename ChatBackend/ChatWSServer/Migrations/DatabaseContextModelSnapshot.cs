@@ -21,7 +21,9 @@ namespace ChatWSServer.Migrations
             modelBuilder.Entity("ChatWSServer.ChatMessage", b =>
                 {
                     b.Property<long>("Id")
-                        .HasColumnType("bigint");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
                     b.Property<string>("ChatRoom")
                         .HasColumnType("text");
@@ -30,6 +32,10 @@ namespace ChatWSServer.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("MessageContent")
+                        .HasColumnType("text");
+
+                    b.Property<string>("TimeStamp")
+                        .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("text");
 
                     b.Property<string>("Username")

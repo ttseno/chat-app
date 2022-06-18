@@ -1,8 +1,6 @@
-using System;
 using ChatWSServer.Configuration;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,6 +13,7 @@ namespace ChatWSServer
         {
             services.AddChatBotCommands();
             services.AddWebSocketServerConnectionManager();
+            services.AddChatManager();
             services.AddServerConfiguration();
             services.AddHostedService<BotMessagesConsumer>();
         }

@@ -18,16 +18,16 @@ namespace ChatWSServer
         private readonly RequestDelegate _next;
 
         private readonly IWebSocketServerConnectionManager _socketManager;
-        private readonly IBotManager _botManager;
-
+        private readonly IChatManager _chatManager;
+        
         public WebSocketServerMiddleware(
             RequestDelegate next, 
             IWebSocketServerConnectionManager socketManager,
-            IBotManager botManager)
+            IChatManager chatManager)
         {
             _next = next;
             _socketManager = socketManager;
-            _botManager = botManager;
+            _chatManager = chatManager;
         }
 
         public async Task InvokeAsync(HttpContext context)
@@ -39,6 +39,7 @@ namespace ChatWSServer
 
                 context.Request.Query.TryGetValue("username", out var username);
                 var connectionId = _socketManager.AddSocket(webSocket, username);
+                context.Request.Query.TryGetValue("roomId", out var roomId);
 
                 await Receive(webSocket, async (result, buffer) =>
                 {
@@ -46,11 +47,15 @@ namespace ChatWSServer
                     {
                         var message = Encoding.UTF8.GetString(buffer, 0, result.Count);
                         Console.WriteLine($"Receive message from client: " + connectionId);
-                        if (_botManager.IsBotCommand(message))
-                        {
-                            _botManager.SendMessage(message);
-                        }
                         
+                        var chatMessage = new ChatMessage()
+                            {
+                                ConnectionId = connectionId, Username = username, RoomId = roomId,
+                                MessageContent = message
+                            };
+                        
+                        _chatManager.HandleMessage(chatMessage);
+
                         await _socketManager.Broadcast(message, username);
                     }
                     else if (result.MessageType == WebSocketMessageType.Close)

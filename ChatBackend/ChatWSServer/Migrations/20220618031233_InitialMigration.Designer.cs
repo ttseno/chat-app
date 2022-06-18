@@ -9,7 +9,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ChatWSServer.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20220618014342_InitialMigration")]
+    [Migration("20220618031233_InitialMigration")]
     partial class InitialMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -23,7 +23,9 @@ namespace ChatWSServer.Migrations
             modelBuilder.Entity("ChatWSServer.ChatMessage", b =>
                 {
                     b.Property<long>("Id")
-                        .HasColumnType("bigint");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
                     b.Property<string>("ChatRoom")
                         .HasColumnType("text");
@@ -32,6 +34,10 @@ namespace ChatWSServer.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("MessageContent")
+                        .HasColumnType("text");
+
+                    b.Property<string>("TimeStamp")
+                        .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("text");
 
                     b.Property<string>("Username")

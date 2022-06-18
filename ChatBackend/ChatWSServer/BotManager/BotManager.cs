@@ -60,13 +60,13 @@ namespace ChatWSServer
                     exclusive: false,
                     autoDelete: false,
                     arguments: null);
-                
-                    channel.BasicPublish(exchange: "",
-                        routingKey: bot.queue,
-                        basicProperties: null,
-                        body: Encoding.UTF8.GetBytes(message));
 
-                    Console.WriteLine($"Sent command request to bot {bot.name}");
+                channel.BasicPublish(exchange: "",
+                    routingKey: bot.queue,
+                    basicProperties: null,
+                    body: Encoding.UTF8.GetBytes(message));
+
+                Console.WriteLine($"Sent command request to bot {bot.name}");
             }
             catch (Exception e)
             {

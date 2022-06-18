@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore.Migrations;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace ChatWSServer.Migrations
 {
@@ -10,11 +11,13 @@ namespace ChatWSServer.Migrations
                 name: "ChatMessages",
                 columns: table => new
                 {
-                    Id = table.Column<long>(type: "bigint", nullable: false),
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     ConnectionId = table.Column<string>(type: "text", nullable: true),
                     ChatRoom = table.Column<string>(type: "text", nullable: true),
                     Username = table.Column<string>(type: "text", nullable: true),
-                    MessageContent = table.Column<string>(type: "text", nullable: true)
+                    MessageContent = table.Column<string>(type: "text", nullable: true),
+                    TimeStamp = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
