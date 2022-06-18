@@ -1,3 +1,4 @@
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -11,7 +12,6 @@ namespace ChatWSServer
         public string RoomId { get; init; }
         public string Username { get; init; }
         public string MessageContent { get; init; }
-        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
-        public string TimeStamp { get; init; } 
+        public DateTimeOffset TimeStamp { get; init; } = DateTimeOffset.Now; 
     }
 }

@@ -25,6 +25,7 @@ namespace StocksBot
         {
             var uri = $"{_configuration.StooqApiBaseUrl}/q/l/?s={stockCode.ToLower()}&f=sd2t2ohlcv&h&e=csv";
             var response = await _httpClient.GetStringAsync(uri);
+            Console.WriteLine("API response/n" + response);
             var lines = response.Split(Environment.NewLine);
             return new StooqModel(lines[1]);
         }

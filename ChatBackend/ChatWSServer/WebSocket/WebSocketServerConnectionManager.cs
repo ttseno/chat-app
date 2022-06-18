@@ -10,24 +10,24 @@ using Newtonsoft.Json;
 
 namespace ChatWSServer
 {
-    public record WebSocketSession(string ClientId, string Username);
+    public record WebSocketSession(string ClientId, string roomId, string Username);
 
     public interface IWebSocketServerConnectionManager
     {
-        string AddSocket(WebSocket socket, string username);
+        string AddSocket(WebSocket socket, string roomId, string username);
         Task CloseSocket(WebSocket socket, WebSocketReceiveResult result);
-        Task SendMessage(WebSocket socket, string message, string username, DateTime? timestamp = null);
-        Task Broadcast(string message, string username);
+        Task SendMessage(WebSocket socket, string roomId, string message, string username, DateTime? timestamp = null);
+        Task Broadcast(string message, string roomId, string username);
     }
     
     public class WebSocketServerConnectionManager : IWebSocketServerConnectionManager
     {
         private ConcurrentDictionary<WebSocketSession, WebSocket> _sockets = new ConcurrentDictionary<WebSocketSession, WebSocket>();
 
-        public string AddSocket(WebSocket socket, string username)
+        public string AddSocket(WebSocket socket, string roomId, string username)
         {
             var connectionId = Guid.NewGuid().ToString();
-            _sockets.TryAdd(new WebSocketSession(connectionId, username) , socket);
+            _sockets.TryAdd(new WebSocketSession(connectionId, roomId, username) , socket);
             Console.WriteLine("WebSocketServerConnectionManager-> AddSocket: WebSocket added with ID: " + connectionId);
             return connectionId;
         }
@@ -37,19 +37,20 @@ namespace ChatWSServer
             return _sockets;
         }
 
-        public async Task SendMessage(WebSocket socket, string  message, string username, DateTime? timestamp = null)
+        public async Task SendMessage(WebSocket socket, string roomId, string  message, string username, DateTime? timestamp = null)
         {
             timestamp ??= DateTime.Now;
-            var response = JsonConvert.SerializeObject(new { message, username, timestamp });
+            var response = JsonConvert.SerializeObject(new { message, username, roomId, timestamp });
             if (socket.State == WebSocketState.Open)
                 await socket.SendAsync(Encoding.UTF8.GetBytes(response), WebSocketMessageType.Text, true, CancellationToken.None);
         }
         
-        public async Task Broadcast(string message, string username)
+        public async Task Broadcast(string message, string roomId, string username)
         {
-            foreach (var sock in GetAllSockets())
+            var roomSockets = GetAllSockets().Where(x => x.Key.roomId == roomId);
+            foreach (var sock in roomSockets)
             {
-                await SendMessage(sock.Value, message, username);
+                await SendMessage(sock.Value, roomId, message, username);
             }
         }
 

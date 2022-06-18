@@ -56,21 +56,23 @@ namespace StocksBot
         private async Task MessageHandler(
             object sender, BasicDeliverEventArgs e)
         {
-            var message = Encoding.UTF8.GetString(e.Body.ToArray());
-            Console.WriteLine($"New message received: {message}");
+            var request = JsonConvert.DeserializeObject<QuotationRequest>(Encoding.UTF8.GetString(e.Body.ToArray()));
+            Console.WriteLine($"New message received to get quotation for {request.stockCode}");
             
             try
             {
-                var quotation = await _client.GetStockQuotation(message);
-                var response = new {user = "stocks-bot", message = quotation.ToString()};
+                var quotation = await _client.GetStockQuotation(request.stockCode);
+                var response = new {user = "stocks-bot", roomId = request.roomId, message = quotation.ToString()};
                 _messagesSender.SendMessage(JsonConvert.SerializeObject(response));
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
-                var errorMessage = new {user = "stocks-bot", message = $"Unable to get quotes for {message}"};
+                var errorMessage = new {user = "stocks-bot", roomId = request.roomId, message = $"Unable to get quotes for {request.stockCode}"};
                 _messagesSender.SendMessage(JsonConvert.SerializeObject(errorMessage));
             }
         }
     }
+    
+    public record QuotationRequest(string roomId, string stockCode);
 }

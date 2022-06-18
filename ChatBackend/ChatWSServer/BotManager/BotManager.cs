@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ChatWSServer.Configuration;
+using Newtonsoft.Json;
 using RabbitMQ.Client;
 
 namespace ChatWSServer
@@ -13,7 +14,7 @@ namespace ChatWSServer
     public interface IBotManager
     {
         bool IsBotCommand(string message);
-        void SendMessage(string message);
+        void SendMessage(string roomId, string message);
     }
     
     public class BotManager : IBotManager
@@ -35,12 +36,16 @@ namespace ChatWSServer
             return BotList.Any(b => message.StartsWith(b.prefix));
         }
 
-        public void SendMessage(string message)
+        public void SendMessage(string roomId, string message)
         {
             var bot = BotList.First(b => message.StartsWith(b.prefix));
-            var requestContent = message.Replace(bot.prefix, "");
+            var requestContent = new
+            {
+                roomId,
+                stockCode = message.Replace(bot.prefix, "")
+            };
 
-            SendMessage(requestContent, bot);
+            SendMessage(JsonConvert.SerializeObject(requestContent), bot);
         }
 
         

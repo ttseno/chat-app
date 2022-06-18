@@ -34,11 +34,10 @@ namespace ChatWSServer
                 Console.WriteLine("WebSocket Connected");
 
                 context.Request.Query.TryGetValue("username", out var username);
-                var connectionId = _socketManager.AddSocket(webSocket, username);
                 context.Request.Query.TryGetValue("roomId", out var roomId);
-                roomId = "test";
+                var connectionId = _socketManager.AddSocket(webSocket, roomId, username);
                 
-                await SendMessages(webSocket, chatManager.GetRoomHistory(roomId));
+                await SendMessages(webSocket, roomId, chatManager.GetRoomHistory(roomId));
 
                 await Receive(webSocket, async (result, buffer) =>
                 {
@@ -55,7 +54,7 @@ namespace ChatWSServer
                         
                         await chatManager.HandleMessage(chatMessage);
 
-                        await _socketManager.Broadcast(message, username);
+                        await _socketManager.Broadcast(message, roomId, username);
                     }
                     else if (result.MessageType == WebSocketMessageType.Close)
                     {
@@ -69,11 +68,11 @@ namespace ChatWSServer
             }
         }
 
-        private async Task SendMessages(WebSocket socket, IEnumerable<ChatMessage> chatMessages)
+        private async Task SendMessages(WebSocket socket, string roomId, IEnumerable<ChatMessage> chatMessages)
         {
             foreach (var message in chatMessages)
             {
-                await _socketManager.SendMessage(socket, message.MessageContent, message.Username);
+                await _socketManager.SendMessage(socket, roomId, message.MessageContent, message.Username);
             }
         }
         

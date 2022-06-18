@@ -1,6 +1,10 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using AutoFixture;
 using AutoFixture.AutoMoq;
 using ChatWSServer;
+using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 
@@ -35,7 +39,7 @@ namespace ChatWSServerTests
             sut.HandleMessage(chatMessage);
 
             // Assert
-            botManagerMock.Verify(m => m.SendMessage(It.Is<string>(it => it == chatMessage.MessageContent)));
+            botManagerMock.Verify(m => m.SendMessage(It.Is<string>(it => it == chatMessage.RoomId),It.Is<string>(it => it == chatMessage.MessageContent)));
         }
         
         [Test]
@@ -60,5 +64,34 @@ namespace ChatWSServerTests
             repository.Verify(r => r.AddAsync(It.IsAny<ChatMessage>()));
         }
 
+        [Test]
+        public void TestGetRoomHistory_ShouldReturnOrderedMessages()
+        {
+            var roomId = "some-Id";
+            var messageList = new List<ChatMessage>()
+            {
+                new ChatMessage() {Id = 1, RoomId = roomId, TimeStamp = DateTime.Now},
+                new ChatMessage() {Id = 2, RoomId = roomId, TimeStamp = DateTime.MinValue},
+                new ChatMessage() {Id = 3, RoomId = roomId, TimeStamp = DateTime.MaxValue}
+            };
+
+            var expectedOrder = new List<long>() {2, 1, 3};
+            
+            var botManagerMock = new Mock<IBotManager>();
+            var repository = new Mock<IChatMessageRepository>();
+
+            repository.Setup(r => r.GetMessages(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>()))
+                .Returns(messageList);
+            
+            var sut = new ChatManager(botManagerMock.Object, repository.Object);
+
+            // Act
+            var result = sut.GetRoomHistory("some-Id");
+
+            result.Should().NotBeNull();
+            result.Select(r => r.Id).Should().BeEquivalentTo(expectedOrder);
+            repository.Verify(r => r.GetMessages(It.Is<string>(it => it == roomId), It.Is<int>(it => it == 50), It.Is<int>(it => it == 0)));
+        }
+        
     }
 }

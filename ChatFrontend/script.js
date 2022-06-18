@@ -1,4 +1,5 @@
 var username = document.getElementById("username");
+var roomId = document.getElementById("roomId");
 var connectButton = document.getElementById("connectButton");
 var stateLabel = document.getElementById("stateLabel");
 var sendMessage = document.getElementById("sendMessage");
@@ -9,7 +10,8 @@ var connID = document.getElementById("connIDLabel");
 
 connectButton.onclick = function () {
     stateLabel.innerHTML = "Attempting to connect...";
-    var socketUrl = "ws://localhost:5000?username=" + username.value;
+    var room = roomId.value ? roomId.value : "default";
+    var socketUrl = "ws://localhost:5000?roomId=" + room + "&username=" + username.value;
     socket = new WebSocket(socketUrl);
     socket.onopen = function (event) {
         updateState();
@@ -87,6 +89,7 @@ function updateState() {
         closeButton.disabled = false;
     }
     username.disabled = true;
+    roomId.disabled = true;
     connectButton.disabled = true;
     if (!socket) {
         disable();
@@ -97,6 +100,7 @@ function updateState() {
                 connID.innerHTML = "ConnID: N/a";
                 disable();
                 username.disabled = false;
+                roomId.disabled = false;
                 connectButton.disabled = false;
                 break;
             case WebSocket.CLOSING:

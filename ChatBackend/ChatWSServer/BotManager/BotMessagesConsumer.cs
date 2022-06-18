@@ -56,9 +56,9 @@ namespace ChatWSServer
         {
             var body = Encoding.UTF8.GetString(e.Body.ToArray());
             var botMessage = JsonConvert.DeserializeObject<BotMessage>(body);
-            await _socketsManager.Broadcast(botMessage.message, botMessage.user);
+            await _socketsManager.Broadcast(botMessage.message, botMessage.roomId, botMessage.user);
         }
     }
 
-    public record BotMessage(string user, string message);
+    public record BotMessage(string user, string roomId, string message);
 }

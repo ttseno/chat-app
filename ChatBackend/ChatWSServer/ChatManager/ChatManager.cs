@@ -25,7 +25,7 @@ namespace ChatWSServer
         {
             if (_botManager.IsBotCommand(message.MessageContent))
             {
-                _botManager.SendMessage(message.MessageContent);
+                _botManager.SendMessage(message.RoomId, message.MessageContent);
             }
             else
             {
