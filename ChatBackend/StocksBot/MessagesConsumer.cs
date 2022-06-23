@@ -42,7 +42,7 @@ namespace StocksBot
                 arguments: null);
 
             var consumer = new AsyncEventingBasicConsumer(channel);
-            consumer.Received += MessageHandler;
+            consumer.Received += MessageHandlerAsync;
             channel.BasicConsume(queue: _rabbitMqConfig.Queue,
                 autoAck: true,
                 consumer: consumer);
@@ -53,7 +53,7 @@ namespace StocksBot
             }
         }
 
-        private async Task MessageHandler(
+        private async Task MessageHandlerAsync(
             object sender, BasicDeliverEventArgs e)
         {
             var request = JsonConvert.DeserializeObject<QuotationRequest>(Encoding.UTF8.GetString(e.Body.ToArray()));
@@ -61,7 +61,7 @@ namespace StocksBot
             
             try
             {
-                var quotation = await _client.GetStockQuotation(request.stockCode);
+                var quotation = await _client.GetStockQuotationAsync(request.stockCode);
                 var response = new {user = "stocks-bot", roomId = request.roomId, message = quotation.ToString()};
                 _messagesSender.SendMessage(JsonConvert.SerializeObject(response));
             }

@@ -68,7 +68,7 @@ AAPL.US,2022-06-17,22:00:08,130.065,133.079,129.81,131.56,134111934
             var stock = "AAPL.US";
             
             // Act
-            var result = await sut.GetStockQuotation(stock);
+            var result = await sut.GetStockQuotationAsync(stock);
 
             // Assert
             result.Should().NotBeNull();

@@ -33,9 +33,9 @@ namespace ChatWSServer
                     context.Request.Query.TryGetValue("roomId", out var roomId);
                     var connectionId = _socketManager.AddSocket(webSocket, roomId, username);
 
-                    await SendMessages(webSocket, roomId, chatManager.GetRoomHistory(roomId));
+                    await SendMessagesAsync(webSocket, roomId, chatManager.GetRoomHistory(roomId));
 
-                    await Receive(webSocket, async (result, buffer) =>
+                    await ReceiveAsync(webSocket, async (result, buffer) =>
                     {
                         if (result.MessageType == WebSocketMessageType.Text)
                         {
@@ -50,11 +50,11 @@ namespace ChatWSServer
 
                             await chatManager.HandleMessage(chatMessage);
 
-                            await _socketManager.Broadcast(message, roomId, username);
+                            await _socketManager.BroadcastAsync(message, roomId, username);
                         }
                         else if (result.MessageType == WebSocketMessageType.Close)
                         {
-                            await _socketManager.CloseSocket(webSocket, result);
+                            await _socketManager.CloseSocketAsync(webSocket, result);
                         }
                     });
                 }
@@ -69,16 +69,16 @@ namespace ChatWSServer
             }
         }
 
-        private async Task SendMessages(WebSocket socket, string roomId, IEnumerable<ChatMessage> chatMessages)
+        private async Task SendMessagesAsync(WebSocket socket, string roomId, IEnumerable<ChatMessage> chatMessages)
         {
             foreach (var message in chatMessages)
             {
-                await _socketManager.SendMessage(socket, roomId, message.MessageContent, message.Username, message.TimeStamp);
+                await _socketManager.SendMessageAsync(socket, roomId, message.MessageContent, message.Username, message.TimeStamp);
             }
         }
         
 
-        private async Task Receive(WebSocket socket, Action<WebSocketReceiveResult, byte[]> handleMessage)
+        private async Task ReceiveAsync(WebSocket socket, Action<WebSocketReceiveResult, byte[]> handleMessage)
         {
             var buffer = new byte[1024 * 4];
 

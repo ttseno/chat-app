@@ -15,9 +15,9 @@ namespace ChatWSServer
     public interface IWebSocketServerConnectionManager
     {
         string AddSocket(WebSocket socket, string roomId, string username);
-        Task CloseSocket(WebSocket socket, WebSocketReceiveResult result);
-        Task SendMessage(WebSocket socket, string roomId, string message, string username, DateTimeOffset? timestamp = null);
-        Task Broadcast(string message, string roomId, string username);
+        Task CloseSocketAsync(WebSocket socket, WebSocketReceiveResult result);
+        Task SendMessageAsync(WebSocket socket, string roomId, string message, string username, DateTimeOffset? timestamp = null);
+        Task BroadcastAsync(string message, string roomId, string username);
     }
     
     public class WebSocketServerConnectionManager : IWebSocketServerConnectionManager
@@ -37,7 +37,7 @@ namespace ChatWSServer
             return _sockets;
         }
 
-        public async Task SendMessage(WebSocket socket, string roomId, string  message, string username, DateTimeOffset? timestamp = null)
+        public async Task SendMessageAsync(WebSocket socket, string roomId, string  message, string username, DateTimeOffset? timestamp = null)
         {
             timestamp ??= DateTimeOffset.Now;
             var response = JsonConvert.SerializeObject(new { message, username, roomId, timestamp });
@@ -45,16 +45,16 @@ namespace ChatWSServer
                 await socket.SendAsync(Encoding.UTF8.GetBytes(response), WebSocketMessageType.Text, true, CancellationToken.None);
         }
         
-        public async Task Broadcast(string message, string roomId, string username)
+        public async Task BroadcastAsync(string message, string roomId, string username)
         {
             var roomSockets = GetAllSockets().Where(x => x.Key.roomId == roomId);
             foreach (var sock in roomSockets)
             {
-                await SendMessage(sock.Value, roomId, message, username);
+                await SendMessageAsync(sock.Value, roomId, message, username);
             }
         }
 
-        public async Task CloseSocket(WebSocket socket, WebSocketReceiveResult result)
+        public async Task CloseSocketAsync(WebSocket socket, WebSocketReceiveResult result)
         {
             var session = _sockets.FirstOrDefault(s => s.Value == socket).Key;
             _sockets.TryRemove(session, out WebSocket removedSocket);

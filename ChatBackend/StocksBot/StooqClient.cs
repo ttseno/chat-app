@@ -7,7 +7,7 @@ namespace StocksBot
 {
     public interface IStooqClient
     {
-        Task<StooqModel> GetStockQuotation(string stockCode);
+        Task<StooqModel> GetStockQuotationAsync(string stockCode);
     }
     
     public class StooqClient : IStooqClient
@@ -21,7 +21,7 @@ namespace StocksBot
             _configuration = configuration;
         }
 
-        public async Task<StooqModel> GetStockQuotation(string stockCode)
+        public async Task<StooqModel> GetStockQuotationAsync(string stockCode)
         {
             var uri = $"{_configuration.StooqApiBaseUrl}/q/l/?s={stockCode.ToLower()}&f=sd2t2ohlcv&h&e=csv";
             var response = await _httpClient.GetStringAsync(uri);

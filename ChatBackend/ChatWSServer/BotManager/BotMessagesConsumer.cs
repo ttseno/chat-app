@@ -40,7 +40,7 @@ namespace ChatWSServer
                 arguments: null);
 
             var consumer = new AsyncEventingBasicConsumer(channel);
-            consumer.Received += MessageHandler;
+            consumer.Received += MessageHandlerAsync;
             channel.BasicConsume(queue: _rabbitMqConfig.BotsResponseQueue,
                 autoAck: true,
                 consumer: consumer);
@@ -51,12 +51,12 @@ namespace ChatWSServer
             }
         }
 
-        private async Task MessageHandler(
+        private async Task MessageHandlerAsync(
             object sender, BasicDeliverEventArgs e)
         {
             var body = Encoding.UTF8.GetString(e.Body.ToArray());
             var botMessage = JsonConvert.DeserializeObject<BotMessage>(body);
-            await _socketsManager.Broadcast(botMessage.message, botMessage.roomId, botMessage.user);
+            await _socketsManager.BroadcastAsync(botMessage.message, botMessage.roomId, botMessage.user);
         }
     }
 
